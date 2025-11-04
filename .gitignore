@@ -1,2 +1,5 @@
 # ignore compiled binary
 pokedexcli
+
+# ignore REPL log
+repl.log
