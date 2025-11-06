@@ -7,19 +7,8 @@ import (
 )
 
 func main() {
-	commandMap := map[string]cliCommand{
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-		"help": {
-			name:        "help",
-			description: "Get info on how to use the Pokedex",
-			callback:    commandHelp,
-		},
-	}
 
+	var currentConfig config
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
@@ -27,14 +16,15 @@ func main() {
 		input := scanner.Text()
 		words := cleanInput(input)
 
-		command, exists := commandMap[words[0]]
+		command, exists := getCommandMap()[words[0]]
 
 		if exists {
-			err := command.callback()
+			err := command.callback(&currentConfig)
 
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 			}
+
 		} else {
 			fmt.Println("Unknown command")
 		}
