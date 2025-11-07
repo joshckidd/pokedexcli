@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/joshckidd/pokedexcli/internal/pokeapi"
+	"github.com/joshckidd/pokedexcli/internal/pokecache"
 )
 
 func getCommandMap() map[string]cliCommand {
@@ -40,6 +43,7 @@ type cliCommand struct {
 type config struct {
 	previousURL string
 	nextUrl     string
+	cache       pokecache.Cache
 }
 
 func cleanInput(text string) []string {
@@ -70,7 +74,7 @@ exit: Exit the Pokedex`)
 }
 
 func commandMap(currentConfig *config) error {
-	locations, err := getLocations(currentConfig.nextUrl)
+	locations, err := pokeapi.GetLocations(currentConfig.nextUrl, currentConfig.cache)
 	if err != nil {
 		return err
 	}
@@ -86,7 +90,7 @@ func commandMap(currentConfig *config) error {
 }
 
 func commandMapb(currentConfig *config) error {
-	locations, err := getLocations(currentConfig.previousURL)
+	locations, err := pokeapi.GetLocations(currentConfig.previousURL, currentConfig.cache)
 	if err != nil {
 		return err
 	}
