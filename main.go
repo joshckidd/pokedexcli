@@ -22,8 +22,13 @@ func main() {
 
 		command, exists := getCommandMap()[words[0]]
 
+		arg := ""
+		if len(words) > 1 {
+			arg = words[1]
+		}
+
 		if exists {
-			err := command.callback(&currentConfig)
+			err := command.callback(arg, &currentConfig)
 
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
