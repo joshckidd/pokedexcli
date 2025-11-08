@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 
@@ -36,6 +37,11 @@ func getCommandMap() map[string]cliCommand {
 			description: "Get a list of Pokemon in a location",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Try to catch a pokemon",
+			callback:    commandCatch,
+		},
 	}
 }
 
@@ -48,6 +54,7 @@ type cliCommand struct {
 type config struct {
 	previousURL string
 	nextUrl     string
+	pokedex     map[string]pokeapi.Pokemon
 	cache       pokecache.Cache
 }
 
@@ -121,6 +128,27 @@ func commandExplore(arg string, currentConfig *config) error {
 	fmt.Println("Found Pokemon:")
 	for _, encounter := range locations.PokemonEncounters {
 		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+	}
+
+	return nil
+}
+
+func commandCatch(arg string, currentConfig *config) error {
+	apiUrl := "https://pokeapi.co/api/v2/pokemon/" + arg
+
+	pokemon, err := pokeapi.GetPokemon(apiUrl, currentConfig.cache)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Throwing a Pokeball at %s...\n", arg)
+	xp := pokemon.BaseExperience
+	r := rand.Intn(xp)
+	if r > xp/2 {
+		fmt.Printf("%s was caught!\n", arg)
+		currentConfig.pokedex[arg] = pokemon
+	} else {
+		fmt.Printf("%s escaped!\n", arg)
 	}
 
 	return nil
