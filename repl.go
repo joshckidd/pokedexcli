@@ -42,7 +42,11 @@ func getCommandMap() map[string]cliCommand {
 			description: "Try to catch a pokemon",
 			callback:    commandCatch,
 		},
-	}
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect a pokemon in your pokedex",
+			callback:    commandInspect,
+		}}
 }
 
 type cliCommand struct {
@@ -143,12 +147,33 @@ func commandCatch(arg string, currentConfig *config) error {
 
 	fmt.Printf("Throwing a Pokeball at %s...\n", arg)
 	xp := pokemon.BaseExperience
-	r := rand.Intn(xp)
-	if r > xp/2 {
+	r := rand.Intn(500)
+	if r > xp {
 		fmt.Printf("%s was caught!\n", arg)
 		currentConfig.pokedex[arg] = pokemon
 	} else {
 		fmt.Printf("%s escaped!\n", arg)
+	}
+
+	return nil
+}
+
+func commandInspect(arg string, currentConfig *config) error {
+	pokemon, ok := currentConfig.pokedex[arg]
+
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+
+	fmt.Printf("Name: %s\nHeight: %v\nWeight: %v\n", arg, pokemon.Height, pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  -%s: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, t := range pokemon.Types {
+		fmt.Printf("  - %s\n", t.Type.Name)
 	}
 
 	return nil
