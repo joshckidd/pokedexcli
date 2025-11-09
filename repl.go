@@ -46,7 +46,13 @@ func getCommandMap() map[string]cliCommand {
 			name:        "inspect",
 			description: "Inspect a pokemon in your pokedex",
 			callback:    commandInspect,
-		}}
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List the pokemon in your pokedex",
+			callback:    commandPokedex,
+		},
+	}
 }
 
 type cliCommand struct {
@@ -174,6 +180,15 @@ func commandInspect(arg string, currentConfig *config) error {
 	fmt.Println("Types:")
 	for _, t := range pokemon.Types {
 		fmt.Printf("  - %s\n", t.Type.Name)
+	}
+
+	return nil
+}
+
+func commandPokedex(arg string, currentConfig *config) error {
+	fmt.Println("Your Pokedex:")
+	for _, pokemon := range currentConfig.pokedex {
+		fmt.Printf(" - %s\n", pokemon.Name)
 	}
 
 	return nil
